@@ -1,8 +1,8 @@
 "use client";
 
 import AppWrapper from "@/components/app-wrapper";
+import React from "react";
 import { motion } from "framer-motion";
-import { GithubIcon, LinkedinIcon, InstagramIcon } from "lucide-react";
 
 const transition = (delay?: number) => ({
   duration: 0.4,
@@ -16,7 +16,7 @@ const transition = (delay?: number) => ({
   delay,
 });
 
-export default function Home() {
+function HomePage() {
   return (
     <section className="flex justify-center items-center h-full">
       <AppWrapper>
@@ -76,3 +76,5 @@ export default function Home() {
     </section>
   );
 }
+
+export default HomePage;

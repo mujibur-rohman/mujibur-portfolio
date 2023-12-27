@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar";
 import ThemeContext from "@/providers/theme-provider";
-import FloatingMenu from "@/components/floating-menu";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,13 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-[#f8fafc] dark:bg-background">
-        <ThemeContext>
-          <main className="relative min-h-screen flex flex-col" id="layout">
-            <Navbar />
-            <FloatingMenu />
-            <div className="flex-grow">{children}</div>
-          </main>
-        </ThemeContext>
+        <ThemeContext>{children}</ThemeContext>
       </body>
     </html>
   );

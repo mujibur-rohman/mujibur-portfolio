@@ -1,5 +1,5 @@
 import React from "react";
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "./ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "../../../components/ui/drawer";
 
 function FloatingMenu() {
   return (

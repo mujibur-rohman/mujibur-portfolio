@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import AppWrapper from "./app-wrapper";
+import AppWrapper from "@/components/app-wrapper";
 import Link from "next/link";
-import styles from "./styles.module.scss";
+import styles from "@/components/styles.module.scss";
 import { useTheme } from "next-themes";
 
 function Navbar() {
@@ -12,7 +12,7 @@ function Navbar() {
     setTheme(theme === "light" ? "dark" : "light");
   };
   return (
-    <nav className="sticky top-0 z-30 w-full border-b border-border h-14 backdrop-blur-lg">
+    <nav className="sticky top-0 z-30 w-full border-b border-border h-14 backdrop-blur-sm">
       <AppWrapper className="flex justify-between items-center h-full">
         <Link href="/" className="text-primary font-bold text-4xl">
           &apos;M&apos;
