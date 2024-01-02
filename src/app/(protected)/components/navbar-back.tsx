@@ -31,6 +31,9 @@ function NavbarBack() {
                 View Portfolio
               </Link>
             </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/manage/profile">See My Profile</Link>
+            </Button>
             <input
               id="toggle"
               className={styles.toggle}
@@ -39,6 +42,7 @@ function NavbarBack() {
                 toggleTheme();
               }}
             />
+
             <Button
               variant="ghost"
               size="icon"

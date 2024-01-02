@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ThemeContext from "@/providers/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-[#f8fafc] dark:bg-background">
+        <Toaster richColors />
         <ThemeContext>{children}</ThemeContext>
       </body>
     </html>

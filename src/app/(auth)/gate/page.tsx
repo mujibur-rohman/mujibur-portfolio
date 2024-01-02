@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AuthService from "@/services/auth/auth.service";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -28,12 +29,15 @@ function GatePage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
       const auth = new AuthService();
       await auth.login(values.email, values.password);
       router.replace("/manage");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.data) {
+        toast.error(error.response.data.message);
+        return;
+      }
+      toast.error(error.message);
     }
   }
 
