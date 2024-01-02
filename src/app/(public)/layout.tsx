@@ -3,8 +3,8 @@ import Navbar from "@/app/(public)/components/navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Management Portfolio",
-  description: "Manage portfolio website",
+  title: "Mujiburrohman",
+  description: "Portfolio Website",
 };
 
 export default function ManagementLayout({ children }: { children: React.ReactNode }) {
