@@ -2,6 +2,7 @@ import axiosInitialize from "@/config/axios.config";
 import Cookies from "js-cookie";
 import { LoginResponse } from "./auth.types";
 import { decryptData, encryptData } from "@/lib/crypto-encrypt";
+import { User } from "../user/user.types";
 
 class AuthService {
   public pathname = "/auth";
@@ -11,11 +12,11 @@ class AuthService {
       email,
       password,
     });
-    const userEncrypted = encryptData(JSON.stringify(response.data));
+    const userEncrypted = encryptData(JSON.stringify(response.data.user));
 
     // * store token to cookie
-    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 60 * 60 * 1000) }); // expired 1 hour
-    Cookies.set("_accessToken", response.data.accessToken, { expires: new Date(new Date().getTime() + 60 * 60 * 1000) }); // expired 1 hour
+    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
+    Cookies.set("_accessToken", response.data.accessToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
     Cookies.set("_refreshToken", response.data.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
 
     return response.data;
@@ -29,16 +30,34 @@ class AuthService {
     }
   }
 
-  async currentUser() {
+  refreshLogin(user: LoginResponse) {
+    console.log(user);
+    const userEncrypted = encryptData(JSON.stringify(user.user));
+
+    // * store token to cookie
+    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
+    Cookies.set("_accessToken", user.accessToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
+    Cookies.set("_refreshToken", user.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
+  }
+
+  currentUser() {
     const user = Cookies.get("_user") as string;
     if (!user) {
       this.logout();
       return;
     }
-    console.log(user);
     const currentUser = decryptData(user);
-    // console.log(currentUser);
-    return JSON.parse(currentUser);
+    return JSON.parse(currentUser) as User;
+  }
+
+  getAccessToken() {
+    const access = Cookies.get("_accessToken");
+    return access;
+  }
+
+  getRefreshToken() {
+    const refresh = Cookies.get("_refreshToken");
+    return refresh;
   }
 }
 
