@@ -33,6 +33,7 @@ function GatePage() {
       await auth.login(values.email, values.password);
       router.replace("/manage");
     } catch (error: any) {
+      console.log(error);
       if (error?.response?.data) {
         toast.error(error.response.data.message);
         return;

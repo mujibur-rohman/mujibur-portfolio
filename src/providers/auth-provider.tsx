@@ -22,6 +22,11 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const currentUser = decryptData(user);
+
+    if (!currentUser) {
+      setCurrentUser(null);
+      return;
+    }
     setCurrentUser(JSON.parse(currentUser) as User);
   }, []);
 

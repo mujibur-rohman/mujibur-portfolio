@@ -12,6 +12,8 @@ class AuthService {
       email,
       password,
     });
+    console.log(response);
+    console.log("TRIGGER");
     const userEncrypted = encryptData(JSON.stringify(response.data.user));
 
     // * store token to cookie
@@ -31,7 +33,6 @@ class AuthService {
   }
 
   refreshLogin(user: LoginResponse) {
-    console.log(user);
     const userEncrypted = encryptData(JSON.stringify(user.user));
 
     // * store token to cookie
@@ -44,9 +45,11 @@ class AuthService {
     const user = Cookies.get("_user") as string;
     if (!user) {
       this.logout();
-      return;
     }
     const currentUser = decryptData(user);
+    if (!currentUser) {
+      return null;
+    }
     return JSON.parse(currentUser) as User;
   }
 

@@ -26,7 +26,6 @@ axiosInitialize.interceptors.response.use(
   async function (error: AxiosError) {
     const auth = new AuthService();
     const originalConfig: any = error.config;
-    console.log(error.config);
     if (error.response) {
       if (error.response.status === 401 && !originalConfig._retry) {
         // * Unauthorized
@@ -52,6 +51,7 @@ axiosInitialize.interceptors.response.use(
         }
       }
     }
+    return Promise.reject(error);
   }
 );
 

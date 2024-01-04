@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname === "/manage") {
+  if (request.nextUrl.pathname.startsWith("/manage")) {
     if (!accessToken) {
       return NextResponse.redirect(new URL("/gate", request.url));
     }
