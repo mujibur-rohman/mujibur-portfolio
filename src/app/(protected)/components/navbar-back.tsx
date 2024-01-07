@@ -10,10 +10,12 @@ import { LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthService from "@/services/auth/auth.service";
 import { useRouter } from "next/navigation";
+import useAuth from "@/hooks/useAuth";
 
 function NavbarBack() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const session = useAuth();
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -55,8 +57,8 @@ function NavbarBack() {
               <LogOutIcon />
             </Button>
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={session?.user?.avatar?.url} alt="@shadcn" />
+              <AvatarFallback>{session?.user?.name}</AvatarFallback>
             </Avatar>
           </div>
         </div>

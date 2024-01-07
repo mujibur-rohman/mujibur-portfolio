@@ -12,8 +12,6 @@ class AuthService {
       email,
       password,
     });
-    console.log(response);
-    console.log("TRIGGER");
     const userEncrypted = encryptData(JSON.stringify(response.data.user));
 
     // * store token to cookie
@@ -27,6 +25,7 @@ class AuthService {
     const access = Cookies.get("_accessToken");
     const refresh = Cookies.get("_refreshToken");
     if (access || refresh) {
+      Cookies.remove("_user");
       Cookies.remove("_accessToken");
       Cookies.remove("_refreshToken");
     }
@@ -41,11 +40,19 @@ class AuthService {
     Cookies.set("_refreshToken", user.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
   }
 
+  updateSession(user: User) {
+    const userEncrypted = encryptData(JSON.stringify(user));
+
+    // * store profile to cookie
+    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
+  }
+
   currentUser() {
     const user = Cookies.get("_user") as string;
     if (!user) {
       this.logout();
     }
+    console.log(user);
     const currentUser = decryptData(user);
     if (!currentUser) {
       return null;

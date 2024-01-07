@@ -1,5 +1,9 @@
 export type User = {
   id: number;
+  avatar?: {
+    url: string;
+    path: string;
+  };
   uuid: string;
   name: string;
   email: string;

@@ -1,33 +1,37 @@
 "use client";
 import AppWrapper from "@/components/app-wrapper";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAuth from "@/hooks/useAuth";
-import UserService from "@/services/user/user.service";
-import { Edit2Icon } from "lucide-react";
-import React, { useEffect } from "react";
+import React from "react";
+import AvatarProfile from "./_component/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import ChangeNameProfile from "./_component/change-name";
+import UpdatePassword from "./_component/update-password";
 
 function ProfilePage() {
   const user = useAuth();
-  const fetchData = async () => {
-    await UserService.getAll();
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+
+  if (!user?.user) {
+    return (
+      <div className="flex flex-col items-center py-5">
+        <Skeleton className="h-20 w-20 rounded-full" />
+        <div className="mt-3 space-y-1">
+          <Skeleton className="h-4 w-[50px] mb-2" />
+          <Skeleton className="h-4 w-[50px]" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AppWrapper className="flex flex-col items-center py-5">
-      <Avatar className="w-20 h-20 relative">
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-        <AvatarFallback>CN</AvatarFallback>
-        <div className="absolute left-0 right-0 bottom-0 h-6 bg-black/50 flex justify-center items-center">
-          <Edit2Icon className="w-4 h-4" />
-        </div>
-        <label htmlFor="avatar" className="absolute z-10 inset-0 cursor-pointer"></label>
-        <input id="avatar" type="file" className="hidden" />
-      </Avatar>
+      <AvatarProfile />
       <div className="mt-3 space-y-1">
-        <p className="text-center">Admin</p>
-        <p className="text-foreground/50 text-center">Mujay</p>
+        <p className="text-center capitalize">{user?.user?.role}</p>
+        <p className="text-foreground/50 text-center">{user?.user?.name}</p>
+      </div>
+      <div className="flex gap-3 mt-6">
+        <ChangeNameProfile />
+        <UpdatePassword />
       </div>
     </AppWrapper>
   );

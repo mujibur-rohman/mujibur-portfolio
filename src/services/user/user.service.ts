@@ -8,6 +8,16 @@ const UserService = {
     const res = await axiosInitialize.get<User[]>("/users");
     return res.data;
   },
+  changeAvatar: async (formData: FormData) => {
+    const res = await axiosInitialize.post<{
+      message: string;
+      data: {
+        url: string;
+        path: string;
+      };
+    }>("/users/avatar", formData);
+    return res.data;
+  },
 };
 
 export default UserService;

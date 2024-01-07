@@ -6,7 +6,7 @@ import AuthService from "@/services/auth/auth.service";
 import { useRouter } from "next/navigation";
 import { decryptData } from "@/lib/crypto-encrypt";
 
-export const AuthContext = createContext<User | null>(null);
+export const AuthContext = createContext<{ user: User | null; updateSession: (user: User) => void } | null>(null);
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -30,7 +30,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser(JSON.parse(currentUser) as User);
   }, []);
 
-  return <AuthContext.Provider value={currentUser}>{children}</AuthContext.Provider>;
+  const updateSession = (user: User) => {
+    const auth = new AuthService();
+    auth.updateSession(user);
+    setCurrentUser(user);
+  };
+
+  return <AuthContext.Provider value={{ user: currentUser, updateSession }}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;

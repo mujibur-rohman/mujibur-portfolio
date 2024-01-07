@@ -43,6 +43,8 @@ axiosInitialize.interceptors.response.use(
             }),
           }).then((res) => res.json());
 
+          console.log(refreshTokenResponse);
+
           auth.refreshLogin(refreshTokenResponse);
 
           return axiosInitialize(error.config as AxiosRequestConfig);
