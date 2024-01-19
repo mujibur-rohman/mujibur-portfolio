@@ -18,6 +18,15 @@ const UserService = {
     }>("/users/avatar", formData);
     return res.data;
   },
+  changeName: async (payload: { userId: string; name: string }) => {
+    const res = await axiosInitialize.put<{
+      message: string;
+      data: {
+        name: string;
+      };
+    }>(`/users/change-name/${payload.userId}`, { name: payload.name });
+    return res.data;
+  },
 };
 
 export default UserService;

@@ -1,7 +1,7 @@
 "use client";
 import AppWrapper from "@/components/app-wrapper";
 import useAuth from "@/hooks/useAuth";
-import React from "react";
+import React, { useState } from "react";
 import AvatarProfile from "./_component/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import ChangeNameProfile from "./_component/change-name";
@@ -9,6 +9,8 @@ import UpdatePassword from "./_component/update-password";
 
 function ProfilePage() {
   const user = useAuth();
+  const [modalName, setModalName] = useState(false);
+  const [modalPassword, setModalPassword] = useState(false);
 
   if (!user?.user) {
     return (
@@ -30,8 +32,8 @@ function ProfilePage() {
         <p className="text-foreground/50 text-center">{user?.user?.name}</p>
       </div>
       <div className="flex gap-3 mt-6">
-        <ChangeNameProfile />
-        <UpdatePassword />
+        <ChangeNameProfile defaultName={user?.user?.name} setOpen={setModalName} isOpen={modalName} />
+        <UpdatePassword isOpen={modalPassword} setOpen={setModalPassword} />
       </div>
     </AppWrapper>
   );
