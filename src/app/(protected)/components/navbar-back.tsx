@@ -34,7 +34,9 @@ function NavbarBack() {
               </Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/manage/profile">See My Profile</Link>
+              <Link href="/manage/profile" className="text-foreground">
+                See My Profile
+              </Link>
             </Button>
             <input
               id="toggle"
@@ -54,7 +56,7 @@ function NavbarBack() {
                 router.replace("/gate");
               }}
             >
-              <LogOutIcon />
+              <LogOutIcon className="text-foreground" />
             </Button>
             <Avatar>
               <AvatarImage src={session?.user?.avatar?.url} alt="@shadcn" />
@@ -63,10 +65,10 @@ function NavbarBack() {
           </div>
         </div>
         <div className="mt-3 flex">
-          <Link href="/manage/dashboard" className="py-2 px-5 border-b border-primary">
+          <Link href="/manage/dashboard" className="py-2 px-5 border-b border-primary text-foreground">
             Dashboard
           </Link>
-          <Link href="/manage/dashboard" className="py-2 px-5 hover:border-b border-primary">
+          <Link href="/manage/dashboard" className="py-2 px-5 hover:border-b border-primary text-foreground">
             Information
           </Link>
         </div>
