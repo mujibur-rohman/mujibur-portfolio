@@ -9,13 +9,26 @@ import { Button } from "@/components/ui/button";
 import { LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthService from "@/services/auth/auth.service";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
+
+const MENU = [
+  {
+    id: "dashboard",
+    name: "Dashboard",
+  },
+  {
+    id: "blog",
+    name: "My Write",
+  },
+];
 
 function NavbarBack() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const session = useAuth();
+  const pathname = usePathname();
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -64,13 +77,18 @@ function NavbarBack() {
             </Avatar>
           </div>
         </div>
-        <div className="mt-3 flex">
-          <Link href="/manage/dashboard" className="py-2 px-5 border-b border-primary text-foreground">
-            Dashboard
-          </Link>
-          <Link href="/manage/dashboard" className="py-2 px-5 hover:border-b border-primary text-foreground">
-            Information
-          </Link>
+        <div className="mt-3 flex overflow-auto">
+          {MENU.map((menu) => (
+            <Link
+              key={menu.id}
+              href={`/manage/${menu.id}`}
+              className={cn("py-2 px-5 border-primary text-foreground whitespace-nowrap", {
+                "border-b": pathname.includes(menu.id),
+              })}
+            >
+              {menu.name}
+            </Link>
+          ))}
         </div>
       </AppWrapper>
     </nav>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ThemeContext from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import QueryProvider from "@/providers/query-client";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className="bg-background">
         <Toaster richColors />
-        <ThemeContext>{children}</ThemeContext>
+        <QueryProvider>
+          <ThemeContext>{children}</ThemeContext>
+        </QueryProvider>
       </body>
     </html>
   );

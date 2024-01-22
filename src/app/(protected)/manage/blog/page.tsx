@@ -1,40 +1,64 @@
-import React from "react";
+"use client";
+
 import AppWrapper from "@/components/app-wrapper";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { ImageIcon } from "lucide-react";
-const Editor = dynamic(() => import("@/components/editor/editor"), { ssr: false });
+import { Input } from "@/components/ui/input";
+import { PlusIcon } from "lucide-react";
+import React, { useState } from "react";
+import SelectFilter from "./_components/select-filter";
+import { useQuery } from "@tanstack/react-query";
+import { DataTable } from "./_components/data-table";
+import { columns } from "./_components/column";
+import PostService from "@/services/post/post.service";
+import PaginationPost from "./_components/pagination";
+import Link from "next/link";
 
 function BlogPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ["posts", currentPage],
+    queryFn: async () => {
+      return await PostService.getAll({ limit: 10, page: currentPage });
+    },
+  });
+
+  //* handle change page
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  if (isLoading) {
+    return <p>Loading bang</p>;
+  }
+
+  console.log(posts);
   return (
-    <div>
-      <div className="bg-primary/15">
-        <AppWrapper className="flex justify-end py-2">
-          <Button size="sm">Publish</Button>
-        </AppWrapper>
+    <AppWrapper>
+      <div className="py-5 flex justify-between">
+        <h1 className="text-xl md:text-2xl font-bold">My Article</h1>
+        <Button
+          size="sm"
+          onClick={() => {
+            console.log("first");
+          }}
+          asChild
+        >
+          <Link href="/manage/blog/add" className="flex gap-1">
+            <PlusIcon className="text-white" /> Create Article
+          </Link>
+        </Button>
       </div>
-      {/* <Image
-        priority
-        className="h-[200px] md:h-[300px] 2xl:h-[400px] w-full object-cover object-center"
-        alt="cover-image"
-        width={500}
-        height={300}
-        src="https://cdn.pixabay.com/photo/2024/01/03/13/01/trees-8485455_1280.jpg"
-      /> */}
-      <AppWrapper>
-        <div className="h-[50px] md:h-[60px] xl:h-[70px] flex items-center justify-end">
-          <Button variant="secondary" size="sm" className="flex gap-1">
-            <ImageIcon className="w-4 h-4" />
-            Upload Cover
-          </Button>
+      <div className="border rounded-lg p-5">
+        <div className="flex justify-between mb-4">
+          <Input className="w-[180px]" placeholder="Search" />
+          <SelectFilter />
         </div>
-      </AppWrapper>
-      <AppWrapper>
-        <input type="text" placeholder="Title" className="text-foreground bg-transparent outline-none text-2xl w-full" />
-        <Editor />
-      </AppWrapper>
-    </div>
+        <DataTable columns={columns} data={posts!.data} />
+        <div className="mt-5">
+          <PaginationPost currentPage={currentPage} handlePageChange={handlePageChange} totalPages={posts!.totalPage} visiblePage={3} />
+        </div>
+      </div>
+    </AppWrapper>
   );
 }
 
