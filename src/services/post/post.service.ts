@@ -12,6 +12,10 @@ const PostService = {
     });
     return res.data;
   },
+  contentImage: async (image: FormData) => {
+    const res = await axiosInitialize.post<{ data: { url: string } }>("/posts/content/image", image);
+    return res.data;
+  },
 };
 
 export default PostService;

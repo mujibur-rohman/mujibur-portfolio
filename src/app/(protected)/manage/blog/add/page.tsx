@@ -1,20 +1,43 @@
+"use client";
 import React from "react";
 import AppWrapper from "@/components/app-wrapper";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { ImageIcon } from "lucide-react";
-const Editor = dynamic(() => import("@/components/editor/editor"), { ssr: false });
+import ContentArticle from "../_components/content";
+import * as z from "zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+export const postSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+  coverImage: z.instanceof(File).nullable(),
+});
 
 function BlogPage() {
+  const form = useForm<z.infer<typeof postSchema>>({
+    resolver: zodResolver(postSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      coverImage: null,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof postSchema>) {
+    console.log(values);
+  }
   return (
-    <div>
-      <div className="bg-primary/15">
-        <AppWrapper className="flex justify-end py-2">
-          <Button size="sm">Publish</Button>
-        </AppWrapper>
-      </div>
-      {/* <Image
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="bg-primary/15">
+          <AppWrapper className="flex justify-end py-2">
+            <Button size="sm" type="submit">
+              Publish
+            </Button>
+          </AppWrapper>
+        </div>
+        {/* <Image
         priority
         className="h-[200px] md:h-[300px] 2xl:h-[400px] w-full object-cover object-center"
         alt="cover-image"
@@ -22,23 +45,19 @@ function BlogPage() {
         height={300}
         src="https://cdn.pixabay.com/photo/2024/01/03/13/01/trees-8485455_1280.jpg"
       /> */}
-      <AppWrapper>
-        <div className="h-[50px] md:h-[60px] xl:h-[70px] flex items-center justify-end">
-          <Button variant="secondary" size="sm" className="flex gap-1">
-            <ImageIcon className="w-4 h-4" />
-            Upload Cover
-          </Button>
-        </div>
-      </AppWrapper>
-      <AppWrapper>
-        <textarea
-          placeholder="Type title..."
-          className="resize-none text-foreground bg-transparent outline-none text-xl md:text-3xl w-full font-bold placeholder:text-foreground/30"
-          rows={2}
-        />
-        <Editor />
-      </AppWrapper>
-    </div>
+        <AppWrapper>
+          <div className="h-[50px] md:h-[60px] xl:h-[70px] flex items-center justify-end">
+            <Button variant="secondary" size="sm" className="flex gap-1">
+              <ImageIcon className="w-4 h-4" />
+              Upload Cover
+            </Button>
+          </div>
+        </AppWrapper>
+        <AppWrapper>
+          <ContentArticle />
+        </AppWrapper>
+      </form>
+    </FormProvider>
   );
 }
 
