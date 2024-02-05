@@ -7,6 +7,7 @@ import ContentArticle from "../_components/content";
 import * as z from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import CoverImage from "../_components/cover-image";
 
 export const postSchema = z.object({
   title: z.string(),
@@ -37,22 +38,7 @@ function BlogPage() {
             </Button>
           </AppWrapper>
         </div>
-        {/* <Image
-        priority
-        className="h-[200px] md:h-[300px] 2xl:h-[400px] w-full object-cover object-center"
-        alt="cover-image"
-        width={500}
-        height={300}
-        src="https://cdn.pixabay.com/photo/2024/01/03/13/01/trees-8485455_1280.jpg"
-      /> */}
-        <AppWrapper>
-          <div className="h-[50px] md:h-[60px] xl:h-[70px] flex items-center justify-end">
-            <Button variant="secondary" size="sm" className="flex gap-1">
-              <ImageIcon className="w-4 h-4" />
-              Upload Cover
-            </Button>
-          </div>
-        </AppWrapper>
+        <CoverImage />
         <AppWrapper>
           <ContentArticle />
         </AppWrapper>
