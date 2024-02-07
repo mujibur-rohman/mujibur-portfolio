@@ -53,10 +53,10 @@
 
 @layer base {
   * {
-    @apply border-border font-montserrat;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground transition-colors;
+    @apply bg-background text-foreground transition-colors font-montserrat;
   }
 }
 

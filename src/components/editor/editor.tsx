@@ -40,7 +40,7 @@ function EditorWrapper() {
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <ResizablePanelGroup className="wrapper-editor" direction="horizontal">
-        <ResizablePanel defaultSize={80}>
+        <ResizablePanel defaultSize={80} className="pr-5">
           <RichTextPlugin
             contentEditable={<ContentEditable className="w-full outline-none" />}
             placeholder={<div className="placeholder-editor">Enter some text...</div>}

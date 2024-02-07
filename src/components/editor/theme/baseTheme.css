@@ -1,11 +1,5 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- *
- */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap");
+
 .PlaygroundEditorTheme__ltr {
   text-align: left;
 }
@@ -92,7 +86,7 @@
 .PlaygroundEditorTheme__code {
   background-color: rgb(25, 34, 48);
   border-radius: 10px;
-  font-family: Menlo, Consolas, Monaco, monospace;
+  font-family: "Source Code Pro", monospace !important;
   display: block;
   padding: 8px 8px 8px 52px;
   line-height: 1.53;
@@ -390,16 +384,16 @@
   color: slategray;
 }
 .PlaygroundEditorTheme__tokenPunctuation {
-  color: #999;
+  color: #d1bc01;
 }
 .PlaygroundEditorTheme__tokenProperty {
-  color: #905;
+  color: rgb(182, 73, 255);
 }
 .PlaygroundEditorTheme__tokenSelector {
-  color: #690;
+  color: rgb(146, 219, 0);
 }
 .PlaygroundEditorTheme__tokenOperator {
-  color: #9a6e3a;
+  color: #ff9819;
 }
 .PlaygroundEditorTheme__tokenAttr {
   color: rgb(0, 162, 231);
@@ -408,7 +402,7 @@
   color: #e90;
 }
 .PlaygroundEditorTheme__tokenFunction {
-  color: #dd4a68;
+  color: #ff4268;
 }
 .PlaygroundEditorTheme__mark {
   background: rgba(255, 212, 0, 0.14);

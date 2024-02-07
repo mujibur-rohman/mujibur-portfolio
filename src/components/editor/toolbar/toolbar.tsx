@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { AlignJustifyIcon, BoldIcon, ItalicIcon, Redo2Icon, UnderlineIcon, Undo2Icon } from "lucide-react";
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import { BoldIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
-  $createParagraphNode,
+  $getNodeByKey,
   $getSelection,
   $isRangeSelection,
   $isRootOrShadowRoot,
@@ -12,18 +12,17 @@ import {
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   FORMAT_TEXT_COMMAND,
-  LexicalEditor,
   NodeKey,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, CODE_LANGUAGE_MAP, getLanguageFriendlyName } from "@lexical/code";
+import { $isCodeNode, CODE_LANGUAGE_MAP } from "@lexical/code";
 import { cn } from "@/lib/utils";
-import { $setBlocksType } from "@lexical/selection";
-import { $isListNode, INSERT_CHECK_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, ListNode, REMOVE_LIST_COMMAND } from "@lexical/list";
-import { $createHeadingNode, $createQuoteNode, $isHeadingNode, $isQuoteNode, HeadingTagType } from "@lexical/rich-text";
-import { $findMatchingParent, $getNearestBlockElementAncestorOrThrow, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { blockTypeToBlockName, rootTypeToRootName } from "./types";
+import { $isListNode, ListNode } from "@lexical/list";
+import { $isHeadingNode } from "@lexical/rich-text";
+import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
+import { blockTypeToBlockName } from "./types";
+import DropdownText from "./dropdown-text";
+import DropdownCode from "./dropdown-code";
 
 function Toolbar() {
   const [editor] = useLexicalComposerContext();
@@ -83,6 +82,23 @@ function Toolbar() {
     }
   }, [activeEditor]);
 
+  const onCodeLanguageSelect = useCallback(
+    (value: string) => {
+      activeEditor.update(() => {
+        if (selectedElementKey !== null) {
+          const node = $getNodeByKey(selectedElementKey);
+          if ($isCodeNode(node)) {
+            console.log(value);
+            node.setLanguage(value);
+          }
+        }
+      });
+      setCodeLanguage(value);
+      console.log(value);
+    },
+    [activeEditor, selectedElementKey]
+  );
+
   useEffect(() => {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
@@ -126,8 +142,13 @@ function Toolbar() {
 
   return (
     <div className="p-2">
-      <div className="flex flex-wrap gap-2"></div>
-      <div className="flex flex-col gap-2 border-b pb-3">
+      {blockType === "code" ? (
+        <div className="flex flex-col gap-2 border-b pb-3 mb-3">
+          <span className="text-sm font-medium">Language</span>
+          <DropdownCode onCodeChange={onCodeLanguageSelect} codeLanguage={codeLanguage} />
+        </div>
+      ) : null}
+      <div className="flex flex-col gap-2 border-b pb-3 mb-3">
         <span className="text-sm font-medium">Font</span>
         <div className="flex flex-wrap gap-2">
           <div
@@ -164,102 +185,9 @@ function Toolbar() {
       </div>
       <div className="flex flex-col gap-2 border-b pb-3">
         <span className="text-sm font-medium">Text</span>
-        <LayoutSelect editor={editor} blockType={blockType} setBlockType={setBlockType} />
+        <DropdownText editor={editor} blockType={blockType} />
       </div>
     </div>
-  );
-}
-
-function LayoutSelect({
-  editor,
-  blockType,
-  setBlockType,
-}: {
-  blockType: keyof typeof blockTypeToBlockName;
-  editor: LexicalEditor;
-  setBlockType: Dispatch<SetStateAction<keyof typeof blockTypeToBlockName>>;
-}) {
-  console.log(blockType);
-  const formatText = (value: typeof blockType) => {
-    switch (value) {
-      case "paragraph":
-        editor.update(() => {
-          const selection = $getSelection();
-          $setBlocksType(selection, () => $createParagraphNode());
-        });
-        break;
-      case "h1":
-        editor.update(() => {
-          const selection = $getSelection();
-          $setBlocksType(selection, () => $createHeadingNode("h1"));
-        });
-        break;
-      case "bullet":
-        if (blockType !== "bullet") {
-          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-        } else {
-          editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-        }
-        break;
-      case "number":
-        if (blockType !== "number") {
-          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-        } else {
-          editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-        }
-        break;
-      case "check":
-        if (blockType !== "check") {
-          editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
-        } else {
-          editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-        }
-        break;
-      case "code":
-        if (blockType !== "code") {
-          editor.update(() => {
-            let selection = $getSelection();
-
-            if (selection !== null) {
-              if (selection.isCollapsed()) {
-                $setBlocksType(selection, () => $createCodeNode());
-              } else {
-                const textContent = selection.getTextContent();
-                const codeNode = $createCodeNode();
-                selection.insertNodes([codeNode]);
-                selection = $getSelection();
-                if ($isRangeSelection(selection)) selection.insertRawText(textContent);
-              }
-            }
-          });
-        }
-        break;
-    }
-    setBlockType(value);
-  };
-
-  const blockTypeArray = Object.entries(blockTypeToBlockName).map(([key, value]) => {
-    return {
-      ...value,
-      key,
-    };
-  });
-
-  return (
-    <Select value={blockType} onValueChange={formatText}>
-      <SelectTrigger className="h-8 text-[12px] rounded-sm min-w-32 max-w-44">
-        <SelectValue placeholder="Select Layout" />
-      </SelectTrigger>
-      <SelectContent>
-        {blockTypeArray.map((item) => (
-          <SelectItem key={item.key} value={item.key} className="h-8 text-[12px]">
-            <div className="flex items-center gap-2">
-              {item.icon} <span>{item.label}</span>
-            </div>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }
 
