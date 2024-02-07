@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useFormContext } from "react-hook-form";
 import { postSchema } from "../add/page";
 import * as z from "zod";
-const Editor = dynamic(() => import("@/components/editor/editor"), { ssr: false });
+import EditorWrapper from "@/components/editor/editor";
 
 function ContentArticle() {
   const form = useFormContext<z.infer<typeof postSchema>>();
@@ -18,7 +18,7 @@ function ContentArticle() {
         className="resize-none text-foreground bg-transparent outline-none text-xl md:text-3xl w-full font-bold placeholder:text-foreground/30"
         rows={2}
       />
-      <Editor onChange={handleChange} />
+      <EditorWrapper />
     </React.Fragment>
   );
 }

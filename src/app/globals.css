@@ -70,3 +70,15 @@
 #layout .snap-scroll {
   scroll-snap-align: start;
 }
+
+/* 
+  TEXT EDITOR
+*/
+
+.wrapper-editor {
+  @apply relative bg-transparent pt-2 flex-grow;
+}
+
+.placeholder-editor {
+  @apply absolute top-2 -z-10;
+}

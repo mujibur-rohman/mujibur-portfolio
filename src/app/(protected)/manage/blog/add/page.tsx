@@ -30,7 +30,7 @@ function BlogPage() {
   }
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-grow">
         <div className="bg-primary/15">
           <AppWrapper className="flex justify-end py-2">
             <Button size="sm" type="submit">
@@ -39,7 +39,7 @@ function BlogPage() {
           </AppWrapper>
         </div>
         <CoverImage />
-        <AppWrapper>
+        <AppWrapper className="flex-grow flex flex-col">
           <ContentArticle />
         </AppWrapper>
       </form>

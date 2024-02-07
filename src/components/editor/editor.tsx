@@ -1,25 +1,64 @@
-"use client";
-import { BlockNoteEditor } from "@blocknote/core";
-import { BlockNoteView, useBlockNote } from "@blocknote/react";
-import "@blocknote/react/style.css";
-import { useTheme } from "next-themes";
-import "./styles.css";
-import PostService from "@/services/post/post.service";
+import { $getRoot, $getSelection } from "lexical";
+import { useEffect } from "react";
 
-export default function Editor({ onChange }: { onChange: (value: string) => Promise<void> }) {
-  const theme = useTheme();
-  const handleUpload = async (file: File) => {};
-  const editor: BlockNoteEditor | null = useBlockNote({
-    onEditorContentChange: async (editor) => {
-      await onChange(JSON.stringify(editor.topLevelBlocks, null, 2));
-    },
-    async uploadFile(file: File) {
-      const formData = new FormData();
-      formData.append("image", file);
-      const res = await PostService.contentImage(formData);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return res.data.url;
-    },
-  });
-  return <BlockNoteView editor={editor} theme={theme.theme as "light" | "dark"} />;
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import Toolbar from "./toolbar/toolbar";
+import lexicalEditorTheme from "./theme";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
+import EditorNodes from "./node";
+import CodeHighlightPlugin from "./plugin/code-highlight-plugin";
+function MyCustomAutoFocusPlugin() {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    editor.focus();
+  }, [editor]);
+
+  return null;
 }
+
+function onError(error: any) {
+  console.error(error);
+}
+
+function EditorWrapper() {
+  const initialConfig = {
+    namespace: "MyEditor",
+    theme: lexicalEditorTheme,
+    nodes: [...EditorNodes],
+    onError,
+  };
+
+  return (
+    <LexicalComposer initialConfig={initialConfig}>
+      <ResizablePanelGroup className="wrapper-editor" direction="horizontal">
+        <ResizablePanel defaultSize={80}>
+          <RichTextPlugin
+            contentEditable={<ContentEditable className="w-full outline-none" />}
+            placeholder={<div className="placeholder-editor">Enter some text...</div>}
+            ErrorBoundary={LexicalErrorBoundary}
+          />
+          <ListPlugin />
+          <CodeHighlightPlugin />
+          <CheckListPlugin />
+          <TabIndentationPlugin />
+          <HistoryPlugin />
+          <MyCustomAutoFocusPlugin />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={20} minSize={20}>
+          <Toolbar />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </LexicalComposer>
+  );
+}
+export default EditorWrapper;

@@ -31,7 +31,6 @@ function BlogPage() {
     return <p>Loading bang</p>;
   }
 
-  console.log(posts);
   return (
     <AppWrapper>
       <div className="py-5 flex justify-between">
