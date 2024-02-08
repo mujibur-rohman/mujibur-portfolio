@@ -1,6 +1,6 @@
 import React from "react";
 import { $getSelection, LexicalEditor, $isRangeSelection, $createParagraphNode } from "lexical";
-import { $createHeadingNode } from "@lexical/rich-text";
+import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
 import { INSERT_CHECK_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "@lexical/list";
 import { $setBlocksType } from "@lexical/selection";
 import { blockTypeToBlockName } from "./types";
@@ -41,6 +41,14 @@ function DropdownText({ editor, blockType }: { blockType: keyof typeof blockType
           editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
         } else {
           editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+        }
+        break;
+      case "quote":
+        if (blockType !== "quote") {
+          editor.update(() => {
+            const selection = $getSelection();
+            $setBlocksType(selection, () => $createQuoteNode());
+          });
         }
         break;
       case "code":

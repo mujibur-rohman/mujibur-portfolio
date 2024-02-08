@@ -66,9 +66,9 @@
   vertical-align: super;
 }
 .PlaygroundEditorTheme__textCode {
-  background-color: rgb(240, 242, 245);
+  @apply bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-300;
   padding: 1px 0.25rem;
-  font-family: Menlo, Consolas, Monaco, monospace;
+  font-family: "Source Code Pro", monospace !important;
   font-size: 94%;
 }
 .PlaygroundEditorTheme__hashtag {

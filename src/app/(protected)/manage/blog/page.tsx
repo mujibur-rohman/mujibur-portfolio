@@ -35,13 +35,7 @@ function BlogPage() {
     <AppWrapper>
       <div className="py-5 flex justify-between">
         <h1 className="text-xl md:text-2xl font-bold">My Article</h1>
-        <Button
-          size="sm"
-          onClick={() => {
-            console.log("first");
-          }}
-          asChild
-        >
+        <Button size="sm" asChild>
           <Link href="/manage/blog/add" className="flex gap-1">
             <PlusIcon className="text-white" /> Create Article
           </Link>
