@@ -322,6 +322,7 @@
   padding-left: 24px;
   padding-right: 24px;
   outline: none;
+  list-style: none;
 }
 .PlaygroundEditorTheme__listItemChecked {
   text-decoration: line-through;

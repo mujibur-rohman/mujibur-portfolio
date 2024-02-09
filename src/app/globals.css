@@ -76,7 +76,7 @@
 */
 
 .wrapper-editor {
-  @apply relative bg-transparent pt-2 flex-grow;
+  @apply relative bg-transparent pt-2 flex-grow flex;
 }
 
 .placeholder-editor {

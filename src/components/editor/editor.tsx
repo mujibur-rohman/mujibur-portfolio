@@ -12,7 +12,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import Toolbar from "./toolbar/toolbar";
 import lexicalEditorTheme from "./theme";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
+import { ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
 import EditorNodes from "./node";
 import CodeHighlightPlugin from "./plugin/code-highlight-plugin";
 import LinkPlugin from "./plugin/link-plugin";
@@ -38,11 +38,10 @@ function EditorWrapper() {
     nodes: [...EditorNodes],
     onError,
   };
-
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <ResizablePanelGroup className="wrapper-editor" direction="horizontal">
-        <ResizablePanel defaultSize={80} className="pr-5">
+      <div className="wrapper-editor">
+        <div className="pr-5 basis-0 grow-[80]">
           <RichTextPlugin
             contentEditable={<ContentEditable className="w-full outline-none" />}
             placeholder={<div className="placeholder-editor">Enter some text...</div>}
@@ -56,12 +55,11 @@ function EditorWrapper() {
           <LinkPlugin />
           <LexicalClickableLinkPlugin />
           <MyCustomAutoFocusPlugin />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={20} minSize={20}>
+        </div>
+        <div className="basis-0 grow-[20]">
           <Toolbar />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+        </div>
+      </div>
     </LexicalComposer>
   );
 }

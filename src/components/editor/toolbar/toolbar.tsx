@@ -15,6 +15,7 @@ import {
   NodeKey,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
+import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { $isLinkNode } from "@lexical/link";
 import { $isCodeNode, CODE_LANGUAGE_MAP } from "@lexical/code";
 import { cn } from "@/lib/utils";
@@ -27,9 +28,14 @@ import DropdownCode from "./dropdown-code";
 
 import DialogLink from "./dialog-link";
 import { getSelectedNode } from "../utils/get-selected-node";
+import TextColor from "./text-color";
+import { useTheme } from "next-themes";
+import BgColor from "./bg-color";
 
 function Toolbar() {
   const [editor] = useLexicalComposerContext();
+  const { theme } = useTheme();
+
   const [openLink, setOpenLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -42,6 +48,8 @@ function Toolbar() {
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
   const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>("paragraph");
   const [codeLanguage, setCodeLanguage] = useState<string>("");
+  const [fontColor, setFontColor] = useState<string>("");
+  const [bgColor, setBgColor] = useState<string>("");
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -75,6 +83,13 @@ function Toolbar() {
       } else {
         setDefaultLink("");
       }
+
+      if (theme === "dark") {
+        setFontColor($getSelectionStyleValueForProperty(selection, "color", "#b8cce0"));
+      } else {
+        setFontColor($getSelectionStyleValueForProperty(selection, "color", "#0e0217"));
+      }
+      setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#00000000"));
     }
     const anchorNode = selection?.getNodes()[0];
 
@@ -87,7 +102,7 @@ function Toolbar() {
           });
 
     if (element === null) {
-      element = anchorNode!.getTopLevelElementOrThrow();
+      element = anchorNode?.getTopLevelElementOrThrow();
     }
 
     const elementKey = element?.getKey();
@@ -100,7 +115,7 @@ function Toolbar() {
         const type = parentList ? parentList.getListType() : element.getListType();
         setBlockType(type);
       } else {
-        const type = $isHeadingNode(element) ? element.getTag() : element!.getType();
+        const type = $isHeadingNode(element) ? element.getTag() : element?.getType();
         if (type in blockTypeToBlockName) {
           setBlockType(type as keyof typeof blockTypeToBlockName);
         }
@@ -129,6 +144,29 @@ function Toolbar() {
     },
     [activeEditor, selectedElementKey]
   );
+
+  const applyStyleText = useCallback(
+    (styles: Record<string, string>, skipHistoryStack?: boolean) => {
+      activeEditor.update(
+        () => {
+          const selection = $getSelection();
+          if (selection !== null) {
+            $patchStyleText(selection, styles);
+          }
+        },
+        skipHistoryStack ? { tag: "historic" } : {}
+      );
+    },
+    [activeEditor]
+  );
+
+  const onFontColorSelect = (value: string, skipHistoryStack: boolean) => {
+    applyStyleText({ color: value }, skipHistoryStack);
+  };
+
+  const onBgColorSelect = (value: string, skipHistoryStack: boolean) => {
+    applyStyleText({ "background-color": value }, skipHistoryStack);
+  };
 
   useEffect(() => {
     return editor.registerCommand(
@@ -239,6 +277,17 @@ function Toolbar() {
       <div className="flex flex-col gap-2 border-b pb-3">
         <span className="text-sm font-medium">Text</span>
         <DropdownText editor={editor} blockType={blockType} />
+      </div>
+      <div className="flex flex-col items-start gap-2 border-b pb-3 mt-3">
+        <span className="text-sm font-medium">Color</span>
+        <div className="flex gap-2 items-center">
+          <div className={cn("px-1 transition-all rounded cursor-pointer")} onClick={() => {}}>
+            <TextColor fontColor={fontColor} onFontColorSelect={onFontColorSelect} />
+          </div>
+          <div className={cn("px-1 transition-all rounded cursor-pointer")} onClick={() => {}}>
+            <BgColor bgColor={bgColor} onBgColorSelect={onBgColorSelect} />
+          </div>
+        </div>
       </div>
     </div>
   );
