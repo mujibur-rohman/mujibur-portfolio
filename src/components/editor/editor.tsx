@@ -1,4 +1,3 @@
-import { $getRoot, $getSelection } from "lexical";
 import { useEffect } from "react";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -7,6 +6,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import LexicalClickableLinkPlugin from "@lexical/react/LexicalClickableLinkPlugin";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
@@ -15,6 +15,8 @@ import lexicalEditorTheme from "./theme";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
 import EditorNodes from "./node";
 import CodeHighlightPlugin from "./plugin/code-highlight-plugin";
+import LinkPlugin from "./plugin/link-plugin";
+
 function MyCustomAutoFocusPlugin() {
   const [editor] = useLexicalComposerContext();
 
@@ -51,6 +53,8 @@ function EditorWrapper() {
           <CheckListPlugin />
           <TabIndentationPlugin />
           <HistoryPlugin />
+          <LinkPlugin />
+          <LexicalClickableLinkPlugin />
           <MyCustomAutoFocusPlugin />
         </ResizablePanel>
         <ResizableHandle />

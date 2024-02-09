@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { BoldIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
+import { BoldIcon, CodeIcon, ItalicIcon, LinkIcon, StrikethroughIcon, Trash2Icon, UnderlineIcon } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
@@ -15,6 +15,7 @@ import {
   NodeKey,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
+import { $isLinkNode } from "@lexical/link";
 import { $isCodeNode, CODE_LANGUAGE_MAP } from "@lexical/code";
 import { cn } from "@/lib/utils";
 import { $isListNode, ListNode } from "@lexical/list";
@@ -24,11 +25,19 @@ import { blockTypeToBlockName } from "./types";
 import DropdownText from "./dropdown-text";
 import DropdownCode from "./dropdown-code";
 
+import DialogLink from "./dialog-link";
+import { getSelectedNode } from "../utils/get-selected-node";
+
 function Toolbar() {
   const [editor] = useLexicalComposerContext();
+  const [openLink, setOpenLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
+  const [isCode, setIsCode] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isLink, setIsLink] = useState(false);
+  const [defaultLink, setDefaultLink] = useState("");
   const [activeEditor, setActiveEditor] = useState(editor);
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
   const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>("paragraph");
@@ -44,6 +53,28 @@ function Toolbar() {
       setIsBold(selection.hasFormat("bold"));
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
+      setIsCode(selection.hasFormat("code"));
+      setIsStrikethrough(selection.hasFormat("strikethrough"));
+
+      // update links
+      const node = getSelectedNode(selection);
+      const parent = node.getParent();
+      if ($isLinkNode(parent) || $isLinkNode(node)) {
+        setIsLink(true);
+      } else {
+        setIsLink(false);
+      }
+
+      // update value parent
+      const linkParent = $findMatchingParent(node, $isLinkNode);
+
+      if (linkParent) {
+        setDefaultLink(linkParent.getURL());
+      } else if ($isLinkNode(node)) {
+        setDefaultLink(node.getURL());
+      } else {
+        setDefaultLink("");
+      }
     }
     const anchorNode = selection?.getNodes()[0];
 
@@ -181,6 +212,28 @@ function Toolbar() {
           >
             <UnderlineIcon className="w-3 h-3" />
           </div>
+          <div
+            className={cn("p-1 transition-all border border-foreground rounded cursor-pointer hover:bg-secondary-foreground/30", {
+              "bg-primary text-background hover:bg-primary/80": isCode,
+            })}
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+            }}
+          >
+            <CodeIcon className="w-3 h-3" />
+          </div>
+
+          <div
+            className={cn("p-1 transition-all border border-foreground rounded cursor-pointer hover:bg-secondary-foreground/30", {
+              "bg-primary text-background hover:bg-primary/80": isStrikethrough,
+            })}
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+            }}
+          >
+            <StrikethroughIcon className="w-3 h-3" />
+          </div>
+          <DialogLink setDefaultUrl={setDefaultLink} defaultUrl={defaultLink} editor={editor} isLink={isLink} isOpen={openLink} setOpen={setOpenLink} />
         </div>
       </div>
       <div className="flex flex-col gap-2 border-b pb-3">
