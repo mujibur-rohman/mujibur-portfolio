@@ -16,6 +16,11 @@ body {
   transition: 0.19s;
 }
 
+.bn-container a {
+  color: rgb(39, 150, 255);
+  text-decoration: underline;
+}
+
 /* Base theme */
 
 .bn-container[data-color-scheme] {

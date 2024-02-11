@@ -8,7 +8,6 @@ import PostService from "@/services/post/post.service";
 
 export default function Editor({ onChange }: { onChange: (value: string) => Promise<void> }) {
   const theme = useTheme();
-  const handleUpload = async (file: File) => {};
   const editor: BlockNoteEditor | null = useBlockNote({
     onEditorContentChange: async (editor) => {
       await onChange(JSON.stringify(editor.topLevelBlocks, null, 2));
