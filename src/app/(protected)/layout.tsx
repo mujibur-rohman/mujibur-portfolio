@@ -12,7 +12,7 @@ export default function ManagementLayout({ children }: { children: React.ReactNo
     <AuthProvider>
       <main className="relative min-h-screen flex flex-col">
         <NavbarBack />
-        <div className="flex-grow">{children}</div>
+        <div className="flex-grow flex flex-col">{children}</div>
       </main>
     </AuthProvider>
   );
