@@ -12,12 +12,12 @@ class AuthService {
       email,
       password,
     });
-    const userEncrypted = encryptData(JSON.stringify(response.data.user));
+    // const userEncrypted = encryptData(JSON.stringify(response.data.user));
 
-    // * store token to cookie
-    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-    Cookies.set("_accessToken", response.data.accessToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-    Cookies.set("_refreshToken", response.data.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
+    // // * store token to cookie
+    // Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
+    // Cookies.set("_accessToken", response.data.accessToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
+    // Cookies.set("_refreshToken", response.data.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
 
     return response.data;
   }
@@ -52,7 +52,6 @@ class AuthService {
     if (!user) {
       this.logout();
     }
-    console.log(user);
     const currentUser = decryptData(user);
     if (!currentUser) {
       return null;

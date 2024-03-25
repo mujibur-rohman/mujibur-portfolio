@@ -18,23 +18,6 @@ function Navbar() {
           &apos;M&apos;
         </Link>
         <div className="flex gap-10 items-center">
-          <div className="hidden md:flex md:items-center gap-10">
-            <Link href="/" className="hover:text-primary transition-colors">
-              Main
-            </Link>
-            <Link href="/" className="hover:text-primary transition-colors">
-              Blog
-            </Link>
-            <Link href="/" className="hover:text-primary transition-colors">
-              Works
-            </Link>
-            <Link href="/" className="hover:text-primary transition-colors">
-              Experience
-            </Link>
-            <Link href="/" className="hover:text-primary transition-colors">
-              Contact
-            </Link>
-          </div>
           <input
             id="toggle"
             className={styles.toggle}

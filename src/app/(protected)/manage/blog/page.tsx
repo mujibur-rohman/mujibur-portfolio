@@ -1,5 +1,3 @@
-"use client";
-
 import AppWrapper from "@/components/app-wrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,24 +10,25 @@ import { columns } from "./_components/column";
 import PostService from "@/services/post/post.service";
 import PaginationPost from "./_components/pagination";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import authConfig from "@/config/auth.config";
 
-function BlogPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts", currentPage],
-    queryFn: async () => {
-      return await PostService.getAll({ limit: 10, page: currentPage });
-    },
-  });
+async function BlogPage() {
+  // const { data: posts, isLoading } = useQuery({
+  //   queryKey: ["posts", currentPage],
+  //   queryFn: async () => {
+  //     return await PostService.getAll({ limit: 10, page: currentPage });
+  //   },
+  // });
 
-  //* handle change page
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  // //* handle change page
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page);
+  // };
 
-  if (isLoading) {
-    return <p>Loading bang</p>;
-  }
+  const session = await getServerSession(authConfig);
+
+  const blogs = await PostService.getAll({ limit: 10, page: 1, token: session!.accessToken });
 
   return (
     <AppWrapper>
@@ -46,10 +45,10 @@ function BlogPage() {
           <Input className="w-[180px]" placeholder="Search" />
           <SelectFilter />
         </div>
-        <DataTable columns={columns} data={posts!.data} />
-        <div className="mt-5">
+        {/* <DataTable columns={columns} data={posts!.data} /> */}
+        {/* <div className="mt-5">
           <PaginationPost currentPage={currentPage} handlePageChange={handlePageChange} totalPages={posts!.totalPage} visiblePage={3} />
-        </div>
+        </div> */}
       </div>
     </AppWrapper>
   );

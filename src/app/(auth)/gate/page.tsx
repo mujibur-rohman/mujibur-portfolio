@@ -7,9 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import AuthService from "@/services/auth/auth.service";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { toast } from "sonner";
+import { DEFAULT_LOGIN_REDIRECT } from "@/config/route.config";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -28,16 +29,14 @@ function GatePage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const auth = new AuthService();
-      await auth.login(values.email, values.password);
-      router.replace("/manage");
-    } catch (error: any) {
-      if (error?.response?.data) {
-        toast.error(error.response.data.message);
-        return;
-      }
-      toast.error(error.message);
+    const res = await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      toast.error(res.error);
     }
   }
 

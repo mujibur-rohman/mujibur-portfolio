@@ -1,50 +1,20 @@
-"use client";
 import React from "react";
-import AppWrapper from "@/components/app-wrapper";
-import { Button } from "@/components/ui/button";
-import { ImageIcon } from "lucide-react";
-import ContentArticle from "../_components/content";
-import * as z from "zod";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import CoverImage from "../_components/cover-image";
+import AddLayout from "../_components/add-layout";
+import PostService from "@/services/post/post.service";
+import { getServerSession } from "next-auth";
+import authConfig from "@/config/auth.config";
 
-export const postSchema = z.object({
-  title: z.string(),
-  content: z.string(),
-  coverImage: z.instanceof(File).nullable(),
-});
+async function AddPostPage() {
+  const session = await getServerSession(authConfig);
+  // const dataPost = await PostService.addPost(
+  //   {
+  //     title: "New Project",
+  //     content: "",
+  //   },
+  //   session!.accessToken
+  // );
 
-function BlogPage() {
-  const form = useForm<z.infer<typeof postSchema>>({
-    resolver: zodResolver(postSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-      coverImage: null,
-    },
-  });
-
-  async function onSubmit(values: z.infer<typeof postSchema>) {
-    console.log(values);
-  }
-  return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-grow">
-        <div className="bg-primary/15">
-          <AppWrapper className="flex justify-end py-2">
-            <Button size="sm" type="submit">
-              Publish
-            </Button>
-          </AppWrapper>
-        </div>
-        <CoverImage />
-        <AppWrapper className="flex-grow flex flex-col">
-          <ContentArticle />
-        </AppWrapper>
-      </form>
-    </FormProvider>
-  );
+  return <AddLayout />;
 }
 
-export default BlogPage;
+export default AddPostPage;

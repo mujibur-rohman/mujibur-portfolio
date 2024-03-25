@@ -10,8 +10,8 @@ import { LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthService from "@/services/auth/auth.service";
 import { usePathname, useRouter } from "next/navigation";
-import useAuth from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { signOut } from "next-auth/react";
 
 const MENU = [
   {
@@ -27,7 +27,6 @@ const MENU = [
 function NavbarBack() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const session = useAuth();
   const pathname = usePathname();
 
   const toggleTheme = () => {
@@ -64,16 +63,15 @@ function NavbarBack() {
               variant="ghost"
               size="icon"
               onClick={async () => {
-                const auth = new AuthService();
-                await auth.logout();
+                await signOut();
                 router.replace("/gate");
               }}
             >
               <LogOutIcon className="text-foreground" />
             </Button>
             <Avatar>
-              <AvatarImage src={session?.user?.avatar?.url} alt="@shadcn" />
-              <AvatarFallback>{session?.user?.name}</AvatarFallback>
+              {/* <AvatarImage src={session?.user?.avatar?.url} alt="@shadcn" /> */}
+              <AvatarFallback>{"TEST"}</AvatarFallback>
             </Avatar>
           </div>
         </div>

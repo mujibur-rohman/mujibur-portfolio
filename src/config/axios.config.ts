@@ -1,5 +1,6 @@
 import AuthService from "@/services/auth/auth.service";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { getSession } from "next-auth/react";
 
 const axiosInitialize = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -24,28 +25,28 @@ axiosInitialize.interceptors.response.use(
     return res;
   },
   async function (error: AxiosError) {
-    const auth = new AuthService();
     const originalConfig: any = error.config;
     if (error.response) {
       if (error.response.status === 401 && !originalConfig._retry) {
         // * Unauthorized
         originalConfig._retry = true;
         try {
-          const refreshTokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token: auth.getRefreshToken(),
-              userId: auth.currentUser()?.uuid,
-            }),
-          }).then((res) => res.json());
+          const session = await getSession();
+          console.log(session);
 
-          console.log(refreshTokenResponse);
+          // const refreshTokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token`, {
+          //   method: "POST",
+          //   headers: {
+          //     Accept: "application/json",
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({
+          //     token: auth.getRefreshToken(),
+          //     userId: auth.currentUser()?.uuid,
+          //   }),
+          // }).then((res) => res.json());
 
-          auth.refreshLogin(refreshTokenResponse);
+          // console.log(refreshTokenResponse);
 
           return axiosInitialize(error.config as AxiosRequestConfig);
         } catch (_error) {
