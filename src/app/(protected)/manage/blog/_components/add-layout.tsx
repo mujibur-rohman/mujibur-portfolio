@@ -1,5 +1,4 @@
 "use client";
-import React, { useCallback, useEffect } from "react";
 import AppWrapper from "@/components/app-wrapper";
 import { Button } from "@/components/ui/button";
 import * as z from "zod";
@@ -8,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CoverImage from "./cover-image";
 import ContentArticle from "./content";
 import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import PostService from "@/services/post/post.service";
 
 export const postSchema = z.object({
@@ -18,7 +16,6 @@ export const postSchema = z.object({
 });
 
 function AddLayout() {
-  const session = useSession();
   const searchParams = useSearchParams();
 
   const form = useForm<z.infer<typeof postSchema>>({
@@ -31,15 +28,13 @@ function AddLayout() {
   });
 
   async function onSubmit(values: z.infer<typeof postSchema>) {
-    console.log(values);
     const dataPost = await PostService.addPost(
       {
         title: "New Project",
         content: "",
       },
-      session.data!.accessToken
+      "dd"
     );
-    console.log("first", dataPost);
   }
 
   return (

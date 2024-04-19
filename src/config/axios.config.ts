@@ -1,6 +1,5 @@
 import AuthService from "@/services/auth/auth.service";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
-import { getSession } from "next-auth/react";
 
 const axiosInitialize = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -8,8 +7,7 @@ const axiosInitialize = axios.create({
 
 axiosInitialize.interceptors.request.use(
   function (config) {
-    const auth = new AuthService();
-    const accessToken = auth.getAccessToken();
+    const accessToken = "s";
     if (accessToken) {
       config.headers.Authorization = "Bearer " + accessToken;
     }
@@ -30,23 +28,23 @@ axiosInitialize.interceptors.response.use(
       if (error.response.status === 401 && !originalConfig._retry) {
         // * Unauthorized
         originalConfig._retry = true;
+        const session = await AuthService.getSession();
+        console.log(session, "SESSIon");
+
         try {
-          const session = await getSession();
-          console.log(session);
+          const refreshTokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              token: session?.refreshToken,
+              userId: session?.uuid,
+            }),
+          }).then((res) => res.json());
 
-          // const refreshTokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token`, {
-          //   method: "POST",
-          //   headers: {
-          //     Accept: "application/json",
-          //     "Content-Type": "application/json",
-          //   },
-          //   body: JSON.stringify({
-          //     token: auth.getRefreshToken(),
-          //     userId: auth.currentUser()?.uuid,
-          //   }),
-          // }).then((res) => res.json());
-
-          // console.log(refreshTokenResponse);
+          console.log(refreshTokenResponse);
 
           return axiosInitialize(error.config as AxiosRequestConfig);
         } catch (_error) {

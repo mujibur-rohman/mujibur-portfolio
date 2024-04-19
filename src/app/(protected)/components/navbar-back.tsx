@@ -1,17 +1,13 @@
 "use client";
-
-import React from "react";
 import styles from "@/components/styles.module.scss";
 import AppWrapper from "@/components/app-wrapper";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogOutIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import AuthService from "@/services/auth/auth.service";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { signOut } from "next-auth/react";
 
 const MENU = [
   {
@@ -63,7 +59,6 @@ function NavbarBack() {
               variant="ghost"
               size="icon"
               onClick={async () => {
-                await signOut();
                 router.replace("/gate");
               }}
             >

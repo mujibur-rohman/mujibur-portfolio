@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,9 +6,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage, Form } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { toast } from "sonner";
-import { DEFAULT_LOGIN_REDIRECT } from "@/config/route.config";
+import AuthService from "@/services/auth/auth.service";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -29,14 +25,9 @@ function GatePage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await signIn("credentials", {
-      email: values.email,
-      password: values.password,
-      redirect: false,
-    });
-
-    if (res?.error) {
-      toast.error(res.error);
+    const res = await AuthService.login(values.email, values.password);
+    if (res?.user) {
+      router.replace("/manage");
     }
   }
 

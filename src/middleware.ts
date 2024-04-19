@@ -1,12 +1,10 @@
-import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import { NextRequestWithAuth } from "next-auth/middleware";
+import { NextRequest, NextResponse } from "next/server";
 import { DEFAULT_LOGIN_REDIRECT } from "./config/route.config";
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequestWithAuth) {
-  const auth = await getToken({ req: request });
-  const authenticated = !!auth;
+export async function middleware(request: NextRequest) {
+  const accessToken = request.cookies.get("session");
+  const authenticated = !!accessToken;
 
   /**
     blocking auth if user has logged

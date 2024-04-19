@@ -1,73 +1,53 @@
 import axiosInitialize from "@/config/axios.config";
-import Cookies from "js-cookie";
 import { LoginResponse } from "./auth.types";
-import { decryptData, encryptData } from "@/lib/crypto-encrypt";
-import { User } from "../user/user.types";
+import { SignJWT, jwtVerify } from "jose";
+import { setCookie, getCookie } from "cookies-next";
+import errorResponse from "@/lib/error-response";
+import { toast } from "sonner";
 
-class AuthService {
-  public pathname = "/auth";
+const secretKey = "chkiuadsehbncfiehuifchuwiaefc";
+const key = new TextEncoder().encode(secretKey);
 
-  async login(email: string, password: string) {
-    const response = await axiosInitialize.post<LoginResponse>(this.pathname, {
-      email,
-      password,
-    });
-    // const userEncrypted = encryptData(JSON.stringify(response.data.user));
+const pathname = "/auth";
 
-    // // * store token to cookie
-    // Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-    // Cookies.set("_accessToken", response.data.accessToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-    // Cookies.set("_refreshToken", response.data.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
-
-    return response.data;
-  }
-  async logout() {
-    const access = Cookies.get("_accessToken");
-    const refresh = Cookies.get("_refreshToken");
-    if (access || refresh) {
-      Cookies.remove("_user");
-      Cookies.remove("_accessToken");
-      Cookies.remove("_refreshToken");
-    }
-  }
-
-  refreshLogin(user: LoginResponse) {
-    const userEncrypted = encryptData(JSON.stringify(user.user));
-
-    // * store token to cookie
-    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-    Cookies.set("_accessToken", user.accessToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-    Cookies.set("_refreshToken", user.refreshToken, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 day
-  }
-
-  updateSession(user: User) {
-    const userEncrypted = encryptData(JSON.stringify(user));
-
-    // * store profile to cookie
-    Cookies.set("_user", userEncrypted, { expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000) }); // expired 1 hour
-  }
-
-  currentUser() {
-    const user = Cookies.get("_user") as string;
-    if (!user) {
-      this.logout();
-    }
-    const currentUser = decryptData(user);
-    if (!currentUser) {
-      return null;
-    }
-    return JSON.parse(currentUser) as User;
-  }
-
-  getAccessToken() {
-    const access = Cookies.get("_accessToken");
-    return access;
-  }
-
-  getRefreshToken() {
-    const refresh = Cookies.get("_refreshToken");
-    return refresh;
-  }
+export async function encrypt(payload: any) {
+  return await new SignJWT(payload).setProtectedHeader({ alg: "HS256" }).setIssuedAt().sign(key);
 }
+
+export async function decrypt(input: string): Promise<any> {
+  const { payload } = await jwtVerify(input, key, {
+    algorithms: ["HS256"],
+  });
+  return payload;
+}
+
+const AuthService = {
+  login: async (email: string, password: string) => {
+    try {
+      const response = await axiosInitialize.post<LoginResponse>(pathname, {
+        email,
+        password,
+      });
+
+      const session = await encrypt({
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken,
+        uuid: response.data.user.uuid,
+      });
+
+      setCookie("session", session);
+      toast.success("Login Success");
+      return response.data;
+    } catch (error: any) {
+      errorResponse(error);
+    }
+  },
+
+  getSession: async (): Promise<{ accessToken: string; refreshToken: string; uuid: string } | null> => {
+    const session = getCookie("session");
+    if (!session) return null;
+    return await decrypt(session);
+  },
+};
 
 export default AuthService;
