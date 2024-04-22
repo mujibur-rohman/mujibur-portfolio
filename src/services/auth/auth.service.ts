@@ -48,6 +48,15 @@ const AuthService = {
     if (!session) return null;
     return await decrypt(session);
   },
+  updateToken: async ({ accessToken, refreshToken, uuid }: { accessToken: string; refreshToken: string; uuid: string }) => {
+    const session = await encrypt({
+      accessToken,
+      refreshToken,
+      uuid,
+    });
+
+    setCookie("session", session);
+  },
 };
 
 export default AuthService;

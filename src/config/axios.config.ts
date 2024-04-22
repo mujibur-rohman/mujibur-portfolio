@@ -6,10 +6,10 @@ const axiosInitialize = axios.create({
 });
 
 axiosInitialize.interceptors.request.use(
-  function (config) {
-    const accessToken = "s";
-    if (accessToken) {
-      config.headers.Authorization = "Bearer " + accessToken;
+  async function (config) {
+    const session = await AuthService.getSession();
+    if (session?.accessToken) {
+      config.headers.Authorization = "Bearer " + session.accessToken;
     }
     return config;
   },
@@ -29,7 +29,6 @@ axiosInitialize.interceptors.response.use(
         // * Unauthorized
         originalConfig._retry = true;
         const session = await AuthService.getSession();
-        console.log(session, "SESSIon");
 
         try {
           const refreshTokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token`, {
@@ -44,7 +43,11 @@ axiosInitialize.interceptors.response.use(
             }),
           }).then((res) => res.json());
 
-          console.log(refreshTokenResponse);
+          AuthService.updateToken({
+            accessToken: refreshTokenResponse.accessToken as string,
+            refreshToken: refreshTokenResponse.refreshToken as string,
+            uuid: refreshTokenResponse.user.uuid as string,
+          });
 
           return axiosInitialize(error.config as AxiosRequestConfig);
         } catch (_error) {
